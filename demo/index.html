@@ -1,0 +1,735 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Amplitude">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="description" content="Book a recording studio session in minutes. Studio A, Studio B and a podcast suite, with an engineer, live pricing and a 50 percent deposit to lock your time.">
+  <meta property="og:title" content="Amplitude Studios — Book a session in minutes">
+  <meta property="og:description" content="Recording, podcast, rehearsal, mixing and mastering. Pick your room, pick your hours, see the price before you book.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="og-image.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>Amplitude Studios — Book a session in minutes</title>
+  <style>
+    :root{
+      color-scheme:light;
+      --paper:#ffffff;--ink:#1B1712;--muted:#6B665E;--panel:#ffffff;--line:#DDD8CF;
+      --brand:#F15B2A;--brand-ink:#ffffff;--signal:#F15B2A;--shadow:#1B1712;--tint:#FDEEE8;
+      --ease:cubic-bezier(.2,.8,.2,1)
+    }
+    *{box-sizing:border-box}html,body{width:100%;height:100%;overflow:hidden}body{margin:0;background:var(--paper);color:var(--ink);font-family:Manrope,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+    button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--signal);outline-offset:3px}
+    .app{height:100%;height:100dvh;overflow:hidden;isolation:isolate;position:relative}
+    .app:before,.app:after{content:"";position:absolute;border:1px solid var(--line);border-radius:50%;pointer-events:none;z-index:-1}
+    .app:before{width:44vw;height:44vw;min-width:280px;min-height:280px;left:-22vw;bottom:-32vw}.app:after{width:24vw;height:24vw;min-width:180px;min-height:180px;right:-12vw;top:-10vw}
+    .chrome{position:absolute;z-index:20;left:clamp(16px,3vw,42px);right:clamp(16px,3vw,42px);top:max(15px,env(safe-area-inset-top));display:none;gap:12px;align-items:center}
+    .app.in-flow .chrome{display:flex}
+    .app.in-flow .screen{padding-bottom:72px}
+    .selltab{position:absolute;z-index:30;left:0;right:0;bottom:0;height:46px;display:flex;justify-content:center;align-items:center;gap:8px;background:var(--ink);color:#fff;font:600 12px IBM Plex Mono,monospace;letter-spacing:.04em;text-decoration:none}
+    .selltab b{color:#fff;background:var(--brand);padding:5px 10px;border-radius:999px;font-weight:600}
+    .selltab span{opacity:.85}.back,.restart{width:44px;height:44px;border:1px solid var(--line);background:var(--panel);display:grid;place-items:center;border-radius:50%;box-shadow:2px 2px 0 var(--shadow);transition:transform .2s var(--ease)}.back:hover,.restart:hover{transform:translate(-1px,-1px)}
+    .restart{margin-left:auto}.progress-track{height:4px;background:var(--line);flex:1;overflow:hidden;border-radius:4px}.progress-fill{height:100%;width:100%;background:var(--brand);transform:scaleX(0);transform-origin:left;transition:transform .65s var(--ease)}
+    .screen{position:absolute;inset:0;padding:max(76px,calc(env(safe-area-inset-top) + 68px)) clamp(18px,6vw,96px) max(20px,env(safe-area-inset-bottom));display:none;place-items:center;opacity:0;transform:translateX(22px);overflow-y:auto}
+    .screen.active{display:grid;opacity:1;transform:none;animation:screenIn .42s var(--ease) both}.screen.exit-left{transform:translateX(-26px);opacity:0}
+    .morph-ghost{position:fixed;z-index:200;pointer-events:none;background:#fff;border:1.5px solid var(--ink);box-shadow:4px 4px 0 var(--ink);margin:0;padding:0}
+    .sheet.ghost-measure{opacity:0!important}
+    .sheet.morph-stage>*{opacity:0;transform:translateY(14px)}
+    .sheet.morph-play>*{opacity:1;transform:none;transition:opacity .45s ease,transform .5s cubic-bezier(.22,1,.36,1)}
+    .sheet.morph-play>*:nth-child(1){transition-delay:.03s}.sheet.morph-play>*:nth-child(2){transition-delay:.09s}
+    .sheet.morph-play>*:nth-child(3){transition-delay:.15s}.sheet.morph-play>*:nth-child(4){transition-delay:.21s}
+    .sheet.morph-play>*:nth-child(5){transition-delay:.27s}.sheet.morph-play>*:nth-child(6){transition-delay:.33s}
+    .sheet.morph-play>*:nth-child(7){transition-delay:.39s}.sheet.morph-play>*:nth-child(8){transition-delay:.45s}
+    .sheet{width:min(880px,100%);min-width:0;max-height:100%;display:flex;flex-direction:column;align-items:center;text-align:center;gap:clamp(12px,2.5vh,24px);margin:auto}
+    .sheet.wide{width:min(1040px,100%)}
+    .step{font:600 11px/1 IBM Plex Mono,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--brand)}
+    h1,h2{margin:0;letter-spacing:-.055em;line-height:.98}h1{font-size:clamp(38px,7vw,86px);max-width:900px}h2{font-size:clamp(32px,5.5vw,68px);max-width:820px}.lede{margin:0;color:var(--muted);font-size:clamp(14px,1.5vw,18px);line-height:1.5;max-width:640px}.tiny{font:500 11px/1.4 IBM Plex Mono,monospace;color:var(--muted)}
+    .choices{width:100%;display:grid;grid-template-columns:repeat(var(--cols,2),minmax(0,1fr));gap:12px}.choice{min-height:clamp(94px,16vh,150px);border:1px solid var(--line);border-radius:18px;background:var(--panel);padding:clamp(14px,2.5vw,26px);text-align:left;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;box-shadow:4px 4px 0 var(--shadow);transition:border-color .2s,transform .18s var(--ease),box-shadow .18s var(--ease)}.choice:hover{border-color:var(--ink);box-shadow:7px 7px 0 var(--shadow);transform:translate(-2px,-2px)}.choice strong{font-size:clamp(17px,2.2vw,25px);letter-spacing:-.025em}.choice small{color:var(--muted);margin-top:10px;line-height:1.35}.choice:after{content:"\2197";position:absolute;right:15px;top:13px;font:600 16px IBM Plex Mono;color:var(--muted)}
+    .choices.addons .choice{padding-right:44px}
+    .choices.addons .choice:after{content:"";border:2px solid var(--line);border-radius:50%;width:20px;height:20px;right:13px;top:11px}
+    .choices.addons .choice.selected{border-color:var(--ink);background:var(--tint);box-shadow:7px 7px 0 var(--shadow)}
+    .choices.addons .choice.selected:after{content:"\2713";border:0;width:auto;height:auto;font:700 16px IBM Plex Mono;color:var(--ink);right:15px;top:11px}
+    .price{font:600 12px IBM Plex Mono,monospace;color:var(--brand);margin-top:8px}
+    .fields{width:min(590px,100%);display:grid;gap:11px}.field{text-align:left;position:relative}.field label{display:block;font:600 10px/1 IBM Plex Mono;text-transform:uppercase;letter-spacing:.11em;margin:0 0 7px 4px;color:var(--muted)}input,select,textarea{width:100%;height:54px;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:0 16px;font-size:16px;box-shadow:2px 2px 0 var(--shadow)}textarea{height:auto;min-height:54px;padding:14px 16px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+    .actions{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap}.primary,.secondary{min-height:52px;border-radius:999px;padding:0 25px;border:1px solid var(--ink);font-weight:800;letter-spacing:-.015em;display:inline-flex;align-items:center;justify-content:center;gap:12px;transition:transform .18s var(--ease),box-shadow .18s var(--ease)}.primary{background:var(--brand);color:var(--brand-ink);box-shadow:4px 4px 0 var(--shadow)}.primary:hover{box-shadow:7px 7px 0 var(--shadow);transform:translate(-2px,-2px)}.secondary{background:transparent;color:var(--ink)}
+    .error{min-height:16px;color:#c4371b;font-size:12px;font-weight:700;margin:0}
+    .loader{padding-top:max(22px,env(safe-area-inset-top))}.loader .sheet{gap:20px}
+    .wordmark{font-weight:800;font-size:clamp(44px,12.5vw,104px);letter-spacing:-.045em;line-height:1;color:var(--ink);animation:logoIn .7s var(--ease) both}
+    .wm-rule{display:block;width:66px;height:6px;background:var(--brand);margin:14px auto 0;border-radius:3px}
+    .wm-sub{display:block;font:600 11px/1 IBM Plex Mono,monospace;letter-spacing:.32em;color:var(--ink);margin-top:12px}
+    .enter{opacity:.35;pointer-events:none;transition:opacity .25s}.enter.ready{opacity:1;pointer-events:auto;box-shadow:4px 4px 0 var(--shadow),0 0 0 5px rgba(241,91,42,.16)}
+    .split span{display:inline-block;opacity:0;transform:translateY(.6em);animation:wordIn .55s var(--ease) forwards;animation-delay:calc(var(--i)*45ms + 40ms)}
+    .summary{width:min(720px,100%);display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:16px;background:var(--panel);box-shadow:4px 4px 0 var(--shadow);overflow:hidden;text-align:left}.summary div{padding:16px;border-right:1px solid var(--line)}.summary div:last-child{border:0}.summary span{display:block;color:var(--muted);font:500 10px IBM Plex Mono;text-transform:uppercase;margin-bottom:7px}.summary b{font-size:14px}
+    .datestrip{display:flex;gap:10px;overflow-x:auto;width:100%;min-width:0;padding:8px 2px 14px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+    .datechip{flex:0 0 auto;scroll-snap-align:start;min-width:78px;border:1px solid var(--line);border-radius:14px;background:var(--panel);box-shadow:3px 3px 0 var(--shadow);padding:10px 8px;display:flex;flex-direction:column;gap:3px;align-items:center}
+    .datechip .dow{font:600 10px IBM Plex Mono,monospace;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+    .datechip .md{font-weight:800;font-size:17px;letter-spacing:-.02em}
+    .datechip.selected{border-color:var(--ink);background:var(--tint);box-shadow:5px 5px 0 var(--shadow)}
+    .timeslots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:100%;min-width:0}
+    .slot{min-height:50px;border:1px solid var(--line);border-radius:12px;background:var(--panel);box-shadow:2px 2px 0 var(--shadow);font-weight:700;font-size:14px;padding:0 4px}
+    .slot.selected{border-color:var(--ink);background:var(--brand);color:var(--brand-ink);box-shadow:3px 3px 0 var(--shadow)}
+    .stepper{display:flex;align-items:center;gap:18px;border:1px solid var(--line);border-radius:18px;background:var(--panel);box-shadow:4px 4px 0 var(--shadow);padding:16px 20px}
+    .stepper button{width:52px;height:52px;border-radius:50%;border:1px solid var(--ink);background:var(--paper);font-size:24px;font-weight:800;display:grid;place-items:center;box-shadow:2px 2px 0 var(--shadow)}
+    .stepper .count{font-size:44px;font-weight:800;letter-spacing:-.03em;min-width:70px}
+    .stepper .unit{font:600 11px IBM Plex Mono,monospace;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+    .breakdown{width:min(640px,100%);border:1px solid var(--line);border-radius:16px;background:var(--panel);box-shadow:4px 4px 0 var(--shadow);overflow:hidden;text-align:left}
+    .breakdown .line{display:flex;justify-content:space-between;gap:14px;padding:13px 16px;border-bottom:1px solid var(--line);font-size:14px}
+    .breakdown .line:last-child{border-bottom:0}
+    .breakdown .line span{color:var(--muted)}
+    .breakdown .line b{white-space:nowrap}
+    .breakdown .line.discount b{color:var(--brand)}
+    .bignum{font-size:clamp(52px,11vw,92px);font-weight:800;letter-spacing:-.05em;line-height:1}
+    .check{width:90px;height:90px}.check circle,.check path{fill:none;stroke:var(--signal);stroke-width:6;stroke-linecap:round;stroke-dasharray:300;stroke-dashoffset:300;animation:draw .8s .15s var(--ease) forwards}.check path{stroke:var(--ink);stroke-dasharray:90;animation-delay:.7s}.ref{font:600 13px IBM Plex Mono;padding:10px 14px;border:1px dashed var(--muted);border-radius:8px}
+    .payline{display:flex;flex-direction:column;gap:12px;align-items:center;width:100%}
+    @keyframes pulseBrand{0%{box-shadow:4px 4px 0 var(--shadow),0 0 0 0 rgba(241,91,42,.5)}100%{box-shadow:4px 4px 0 var(--shadow),0 0 0 18px rgba(241,91,42,0)}}
+    .pulse{animation:pulseBrand 1s ease-out 3}
+    .linklike{background:none;border:0;color:var(--muted);text-decoration:underline;font-size:13px;font-weight:600;padding:8px}
+    #confetti{position:fixed;inset:0;pointer-events:none;z-index:300}
+    @keyframes screenIn{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}@keyframes logoIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}@keyframes draw{to{stroke-dashoffset:0}}@keyframes wordIn{to{opacity:1;transform:none}}
+    @media(max-width:620px){.screen{padding-left:16px;padding-right:16px}.sheet{gap:12px}.choices{gap:8px}.choice{min-height:88px;border-radius:14px;padding:13px;box-shadow:3px 3px 0 var(--shadow)}.choice small{font-size:11px}.row{gap:8px}.summary{grid-template-columns:1fr}.summary div{border-right:0;border-bottom:1px solid var(--line);padding:10px 13px}.chrome{gap:8px}.back,.restart{width:40px;height:40px}h1{font-size:clamp(36px,12vw,56px)}.timeslots{grid-template-columns:repeat(4,minmax(0,1fr))}.slot{font-size:12.5px;min-height:46px}}
+    @media(max-height:690px){.screen{padding-top:66px;padding-bottom:10px}.sheet{gap:9px}h2{font-size:clamp(29px,5.2vw,48px)}.lede{font-size:13px}.choice{min-height:78px;padding:11px}.fields{gap:7px}input,select{height:46px}.field label{margin-bottom:4px}.primary,.secondary{min-height:46px}.summary div{padding:9px 12px}.check{width:68px;height:68px}.datechip{min-width:68px;padding:8px 6px}.slot{min-height:42px}.stepper .count{font-size:36px}.stepper button{width:46px;height:46px}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}.choice:hover,.primary:hover{transform:none}.check circle,.check path{stroke-dashoffset:0}.enter.ready{animation:none}}
+  </style>
+</head>
+<body>
+<main class="app" id="app">
+  <nav class="chrome" aria-label="Step navigation">
+    <button class="back" id="backBtn" type="button" aria-label="Go back"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
+    <button class="restart" id="restartBtn" type="button" aria-label="Start over"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5M6.1 8a7 7 0 0 1 11.6-1L20 9M4 15l2.3 2a7 7 0 0 0 11.6-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  </nav>
+  <a class="selltab" id="sellTab" href="#" target="_blank" rel="noopener"><span>Need a site like this?</span><b>Get yours →</b></a>
+
+  <section class="screen active loader" data-screen="loader" aria-labelledby="load-title">
+    <div class="sheet">
+      <div class="wordmark" aria-label="Amplitude Studios">AMPLITUDE<span class="wm-rule" aria-hidden="true"></span><span class="wm-sub">RECORDING STUDIOS</span></div>
+      <p class="step">Book a session in minutes</p>
+      <h1 id="load-title">Your next record starts with a time slot.</h1>
+      <p class="tiny">Studio A · Studio B · Podcast Suite · Mixing · Mastering<br>Demo site · Placeholder rates · Reskins to any studio</p>
+      <button class="primary enter" id="enterBtn" type="button">Enter <span aria-hidden="true">→</span></button>
+    </div>
+  </section>
+
+  <section class="screen" data-screen="project"><div class="sheet"><p class="step">Project 01</p><h2>What are you making?</h2><div class="choices" style="--cols:2">
+    <button class="choice" data-answer="project" data-value="Single" data-next="session"><strong>Single</strong><small>One song, done right</small></button>
+    <button class="choice" data-answer="project" data-value="Album" data-next="session"><strong>Album</strong><small>A full body of work</small></button>
+    <button class="choice" data-answer="project" data-value="EP" data-next="session"><strong>EP</strong><small>Three to six songs</small></button>
+    <button class="choice" data-answer="project" data-value="Podcast" data-next="session"><strong>Podcast</strong><small>Talk, interview, series</small></button>
+    <button class="choice" data-answer="project" data-value="Voiceover" data-next="session"><strong>Voiceover</strong><small>Ads, audiobooks, narration</small></button>
+    <button class="choice" data-answer="project" data-value="Something else" data-next="session"><strong>Something else</strong><small>Tell us in the notes</small></button>
+  </div></div></section>
+
+  <section class="screen" data-screen="session"><div class="sheet wide"><p class="step">Session 02</p><h2>What do you need?</h2><div class="choices" style="--cols:2">
+    <button class="choice" data-sessiontype="record-eng" data-value="Recording, with engineer" data-next="room"><strong>Recording, with engineer</strong><small>We run the desk, you perform</small><span class="price">FROM $55/HR</span></button>
+    <button class="choice" data-sessiontype="record-dry" data-value="Recording, room only" data-next="room"><strong>Recording, room only</strong><small>Your engineer, our room and gear</small><span class="price">FROM $55/HR</span></button>
+    <button class="choice" data-sessiontype="podcast" data-value="Podcast recording" data-next="room"><strong>Podcast recording</strong><small>Engineer included, video-ready suite</small><span class="price">FROM $55/HR</span></button>
+    <button class="choice" data-sessiontype="rehearsal" data-value="Rehearsal" data-next="room"><strong>Rehearsal</strong><small>Backline included, no engineer</small><span class="price">ROOM RATE</span></button>
+    <button class="choice" data-sessiontype="mixing" data-value="Mixing" data-next="songs"><strong>Mixing</strong><small>Send stems, get a finished mix</small><span class="price">$350 / SONG</span></button>
+    <button class="choice" data-sessiontype="mastering" data-value="Mastering" data-next="songs"><strong>Mastering</strong><small>Streaming-ready loudness and polish</small><span class="price">$75 / SONG</span></button>
+    <button class="choice" data-sessiontype="mixmaster" data-value="Mix + Master" data-next="songs"><strong>Mix + Master</strong><small>The full finish, one booking</small><span class="price">$399 / SONG</span></button>
+  </div></div></section>
+
+  <section class="screen" data-screen="room"><div class="sheet"><p class="step">Room 03</p><h2>Pick your room.</h2><p class="lede" id="roomLede">Every room is treated, tuned and ready when you walk in.</p><div class="choices" style="--cols:1" data-count="3">
+    <button class="choice" data-room="A" data-rate="95" data-value="Studio A" data-next="duration"><strong>Studio A · Live Room</strong><small>Full band, drums, grand piano. Seats 8.</small><span class="price">$95 / HR</span></button>
+    <button class="choice" data-room="B" data-rate="65" data-value="Studio B" data-next="duration"><strong>Studio B · Vocal + Production</strong><small>Vocals, production, overdubs. Seats 4.</small><span class="price">$65 / HR</span></button>
+    <button class="choice" data-room="P" data-rate="55" data-value="Podcast Suite" data-next="duration"><strong>Podcast Suite</strong><small>4 mics, cameras, treated talk room. Seats 4.</small><span class="price">$55 / HR</span></button>
+  </div></div></section>
+
+  <section class="screen" data-screen="duration"><div class="sheet"><p class="step">Time 04</p><h2>How long do you need?</h2><p class="lede">Longer blocks cost less per hour. Discount applies to the room.</p><div class="choices" style="--cols:2">
+    <button class="choice" data-hours="2" data-value="2 hours" data-next="addons"><strong>2 hours</strong><small>Quick session</small><span class="price">FULL RATE</span></button>
+    <button class="choice" data-hours="4" data-value="4 hours" data-next="addons"><strong>4 hours</strong><small>Half day</small><span class="price">5% OFF ROOM</span></button>
+    <button class="choice" data-hours="8" data-value="8 hours" data-next="addons"><strong>8 hours</strong><small>Full day</small><span class="price">10% OFF ROOM</span></button>
+    <button class="choice" data-hours="10" data-value="10 hours" data-next="addons"><strong>10 hour lockout</strong><small>The room is yours, all day</small><span class="price">15% OFF ROOM</span></button>
+  </div></div></section>
+
+  <section class="screen" data-screen="songs"><div class="sheet"><p class="step">Songs 03</p><h2>How many songs?</h2><p class="lede" id="songsLede">Per-song pricing. Four or more songs takes 10% off the service.</p>
+    <div class="stepper" aria-label="Number of songs">
+      <button type="button" id="songMinus" aria-label="Fewer songs">−</button>
+      <div><div class="count" id="songCount">1</div><div class="unit" id="songUnit">song</div></div>
+      <button type="button" id="songPlus" aria-label="More songs">+</button>
+    </div>
+    <p class="tiny" id="songPriceLine">$350 per song</p>
+    <button class="primary" id="songsContinue" type="button">Continue <span aria-hidden="true">→</span></button>
+  </div></section>
+
+  <section class="screen" data-screen="addons"><div class="sheet wide"><p class="step">Extras</p><h2>Add anything?</h2><p class="lede">Optional. Tap to add, tap again to remove.</p>
+    <div class="choices addons" style="--cols:2">
+      <button class="choice addon" type="button" data-addon="Session musician" data-price="150" aria-pressed="false"><strong>Session musician</strong><small>Pro player on your track, sourced by us</small><span class="price">+ $150 FLAT</span></button>
+      <button class="choice addon" type="button" data-addon="Vocal production + tuning" data-price="60" aria-pressed="false"><strong>Vocal production + tuning</strong><small>Comping, tuning and polish</small><span class="price">+ $60</span></button>
+      <button class="choice addon" type="button" data-addon="Stems + alt mixes" data-price="40" aria-pressed="false"><strong>Stems + alt mixes</strong><small>Instrumental, clean and live versions</small><span class="price">+ $40</span></button>
+      <button class="choice addon" type="button" data-addon="Rush turnaround (48h)" data-price="99" aria-pressed="false"><strong>Rush turnaround</strong><small>Finished files inside 48 hours</small><span class="price">+ $99</span></button>
+    </div>
+    <button class="primary" id="addonsContinue" type="button">Continue <span aria-hidden="true">→</span></button>
+  </div></section>
+
+  <section class="screen" data-screen="schedule"><div class="sheet wide"><p class="step">Schedule</p><h2 id="scheduleTitle">When do you want in?</h2><p class="lede" id="scheduleLede">Open 7 days, 9 AM to 11 PM. Pick a day and a start time.</p>
+    <div class="datestrip" id="dateStrip" role="listbox" aria-label="Available dates"></div>
+    <div class="timeslots" id="timeSlots" role="listbox" aria-label="Available times"></div>
+    <p class="tiny" id="slotNote">All times local · subject to confirmation until the deposit lands</p>
+    <p class="error" id="scheduleError"></p>
+    <button class="primary" id="scheduleContinue" type="button">Continue <span aria-hidden="true">→</span></button>
+  </div></section>
+
+  <section class="screen" data-screen="contact"><div class="sheet"><p class="step">Contact</p><h2>Where do we send the details?</h2><p class="lede">Your estimate and session sheet go here. No spam, ever.</p><div class="fields">
+    <div class="row"><div class="field"><label for="fullName">Full name</label><input id="fullName" autocomplete="name" placeholder="Your name"></div><div class="field"><label for="artistName">Artist / project name</label><input id="artistName" placeholder="Artist or show name"></div></div>
+    <div class="row"><div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="email" placeholder="you@email.com"></div><div class="field"><label for="phone">Mobile</label><input id="phone" type="tel" autocomplete="tel" placeholder="(555) 000-0000"></div></div>
+    <div class="field"><label for="notes">Notes for the engineer (optional)</label><textarea id="notes" placeholder="Gear, references, who is coming, anything we should prep"></textarea></div>
+  </div><p class="error" id="contactError"></p><button class="primary" id="contactContinue" type="button">See my estimate <span aria-hidden="true">→</span></button></div></section>
+
+  <section class="screen" data-screen="estimate"><div class="sheet"><p class="step">Your estimate</p><h2>Here is the full price.</h2>
+    <div class="bignum" id="estTotal">$0</div>
+    <div class="breakdown" id="estLines"></div>
+    <p class="lede" id="estDepositLine">50% deposit locks your time. The rest is due on the day.</p>
+    <p class="error" id="estimateError"></p>
+    <div class="actions"><button class="primary" id="estContinue" type="button">Lock in this estimate <span aria-hidden="true">→</span></button></div>
+  </div></section>
+
+  <section class="screen" data-screen="payment"><div class="sheet"><p class="step">Deposit</p><h2>Lock in your session.</h2>
+    <div class="summary"><div><span>Session</span><b id="paySession">—</b></div><div><span>Date</span><b id="payDate">—</b></div><div><span>Deposit due</span><b id="payDeposit">—</b></div></div>
+    <p class="lede">Pay the 50% deposit now, or have the invoice sent to you by email or text. Your time is held for 24 hours either way.</p>
+    <p class="error" id="payError"></p>
+    <div class="payline">
+      <button class="primary" id="payNow" type="button">Pay deposit <span aria-hidden="true">→</span></button>
+      <button class="secondary" id="paidDone" type="button" style="display:none">I have completed payment</button>
+      <button class="secondary" id="invoiceMe" type="button">Invoice me by email or text</button>
+    </div>
+  </div></section>
+
+  <section class="screen" data-screen="confirm"><div class="sheet"><svg class="check" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="43"/><path d="m29 51 14 14 29-32"/></svg><p class="step">Booking received</p><h2>You are booked in.</h2><p class="lede" id="confirmLede">Details sent to your email. The studio confirms every booking personally.</p><div class="ref" id="confirmRef">ST-0000</div>
+    <div class="summary"><div><span>Session</span><b id="confirmSession">—</b></div><div><span>Date</span><b id="confirmDate">—</b></div><div><span>Artist</span><b id="confirmName">—</b></div></div>
+    <div class="actions"><button class="primary" id="downloadSheet" type="button">Download session sheet</button><button class="secondary" id="bookAnother" type="button">Book another session</button></div>
+  </div></section>
+</main>
+<canvas id="confetti" width="0" height="0" aria-hidden="true"></canvas>
+<script>
+var CONFIG={
+  BUSINESS_NAME:'Amplitude Studios',
+  STUDIO_EMAIL:'PASTE_STUDIO_EMAIL',
+  APPS_SCRIPT_URL:'PASTE_APPS_SCRIPT_URL',
+  CALENDAR_ID:'PASTE_CALENDAR_ID',
+  JIM_DEPOSIT:'PASTE_JIM_DEPOSIT_LINK',
+  CHECKOUT_URL:'https://muse.ai/s/studio-sites-booking-websites-for-xfxx6m1kergs7/54BLV5bi6rlHe-cS6-JehiaY76LHcxVN0MwPsqm2tWM',
+  TIMEZONE:'America/New_York'
+};
+var RATES={roomA:95,roomB:65,podcast:55,engineerB:25,mixing:350,mastering:75,mixmaster:399};
+</script>
+<script>
+(function(){
+  'use strict';
+  function isConfigured(v){return !!v&&v.indexOf('PASTE_')!==0}
+  var app=document.getElementById('app');
+  var current='loader';
+  var history=[];
+  function freshState(){return{project:null,sessionType:null,sessionLabel:'',room:null,roomName:'',roomRate:0,hours:0,songs:1,addons:[],fullName:'',artistName:'',email:'',phone:'',notes:'',date:'',time:'',bookingRef:'',paid:false,payMethod:'',contactGiven:false,leadSaved:false,bookingSaved:false,payOpened:false,confirmedShown:false}}
+  var state=freshState();
+  var FLOW=['project','session','room','duration','songs','addons','schedule','contact','estimate','payment','confirm'];
+  var progress=document.getElementById('progressFill');
+  var reducedMotion=false;
+  try{reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){}
+  function text(id,value){var el=document.getElementById(id);if(el)el.textContent=value}
+  function money(n){return '$'+Math.round(n).toLocaleString('en-US')}
+  function splitTitle(el){
+    if(!el||el.dataset.splitDone)return;
+    var words=el.textContent.trim().split(/\s+/);el.textContent='';el.classList.add('split');
+    words.forEach(function(word,i){var s=document.createElement('span');s.textContent=word+(i<words.length-1?'\u00A0':'');s.style.setProperty('--i',i);el.appendChild(s)});el.dataset.splitDone='1';
+  }
+  function setProgress(){var idx=FLOW.indexOf(current);var ratio=idx<0?0:idx/(FLOW.length-1);progress.style.transform='scaleX('+ratio+')'}
+  var isMorphing=false,morphOrigin=null;
+  var MORPH_EASE='cubic-bezier(.22,1,.36,1)';
+  function ghostFor(box){
+    var g=document.createElement('div');g.className='morph-ghost';
+    g.style.left=box.left+'px';g.style.top=box.top+'px';
+    g.style.width=box.width+'px';g.style.height=box.height+'px';
+    g.style.transformOrigin='top left';
+    document.body.appendChild(g);return g;
+  }
+  function radiusOf(el){try{return window.getComputedStyle(el).borderRadius.split(' ')[0]||'14px'}catch(e){return '14px'}}
+  function morphStagger(sheet,done){
+    sheet.classList.add('morph-stage');
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      sheet.classList.add('morph-play');
+      setTimeout(function(){sheet.classList.remove('morph-stage','morph-play');if(done)done()},950);
+    })});
+  }
+  function goMorph(card,nextId){
+    if(isMorphing||reducedMotion){go(nextId,true);return}
+    var fromId=current;
+    var fromScreen=document.querySelector('[data-screen="'+fromId+'"]');
+    var next=document.querySelector('[data-screen="'+nextId+'"]');
+    if(!fromScreen||!next){go(nextId,true);return}
+    var first=card.getBoundingClientRect();
+    if(!first.width||!first.height){go(nextId,true);return}
+    isMorphing=true;
+    var fromSheet=fromScreen.querySelector('.sheet');
+    var nextSheet=next.querySelector('.sheet');
+    next.classList.add('active');
+    nextSheet.classList.add('ghost-measure');
+    var last=nextSheet.getBoundingClientRect();
+    var g=ghostFor(last);
+    var sr=radiusOf(card);
+    var dx=first.left-last.left,dy=first.top-last.top;
+    var sx=first.width/last.width,sy=first.height/last.height;
+    card.style.visibility='hidden';
+    if(fromSheet){fromSheet.style.transition='opacity .16s ease';fromSheet.style.opacity='0'}
+    var anim=g.animate([
+      {transform:'translate('+dx+'px,'+dy+'px) scale('+sx+','+sy+')',borderRadius:sr},
+      {transform:'translate(0px,0px) scale(1,1)',borderRadius:'18px'}
+    ],{duration:560,easing:MORPH_EASE,fill:'forwards'});
+    var finished=false;
+    function land(){
+      if(finished)return;finished=true;
+      fromScreen.classList.remove('active');fromScreen.setAttribute('aria-hidden','true');
+      if(fromSheet){fromSheet.style.opacity='';fromSheet.style.transition=''}
+      next.removeAttribute('aria-hidden');
+      nextSheet.classList.remove('ghost-measure');
+      card.style.visibility='';
+      history.push(fromId);current=nextId;
+      splitTitle(next.querySelector('h1,h2'));updateDynamic(nextId);setProgress();
+      morphOrigin={card:card,from:fromId,to:nextId};
+      var fade=g.animate([{opacity:1},{opacity:0}],{duration:130,easing:'ease',fill:'forwards'});
+      fade.onfinish=function(){g.remove()};
+      morphStagger(nextSheet,function(){isMorphing=false});
+      window.setTimeout(function(){var t=next.querySelector('button,input,select,textarea');if(t&&nextId!=='project')t.focus({preventScroll:true})},700);
+    }
+    anim.onfinish=land;setTimeout(land,700);
+  }
+  function goMorphBack(card,prevId){
+    isMorphing=true;
+    var fromId=current;
+    var fromScreen=document.querySelector('[data-screen="'+fromId+'"]');
+    var prev=document.querySelector('[data-screen="'+prevId+'"]');
+    if(!fromScreen||!prev){isMorphing=false;go(prevId,false);return}
+    var fromSheet=fromScreen.querySelector('.sheet');
+    var prevSheet=prev.querySelector('.sheet');
+    prev.classList.add('active');
+    prevSheet.classList.add('ghost-measure');
+    var first=fromSheet.getBoundingClientRect();
+    var last=card.getBoundingClientRect();
+    if(!first.width||!last.width){prev.classList.remove('active');prevSheet.classList.remove('ghost-measure');isMorphing=false;go(prevId,false);return}
+    var g=ghostFor(first);
+    var sr=radiusOf(card);
+    var dx=last.left-first.left,dy=last.top-first.top;
+    var sx=last.width/first.width,sy=last.height/first.height;
+    card.style.visibility='hidden';
+    fromSheet.style.transition='opacity .15s ease';fromSheet.style.opacity='0';
+    var anim=g.animate([
+      {transform:'translate(0px,0px) scale(1,1)',borderRadius:'18px'},
+      {transform:'translate('+dx+'px,'+dy+'px) scale('+sx+','+sy+')',borderRadius:sr}
+    ],{duration:520,easing:MORPH_EASE,fill:'forwards'});
+    var finished=false;
+    function land(){
+      if(finished)return;finished=true;
+      fromScreen.classList.remove('active');fromScreen.setAttribute('aria-hidden','true');
+      fromSheet.style.opacity='';fromSheet.style.transition='';
+      prev.removeAttribute('aria-hidden');
+      prevSheet.classList.remove('ghost-measure');
+      card.style.visibility='';
+      current=prevId;
+      splitTitle(prev.querySelector('h1,h2'));updateDynamic(prevId);setProgress();
+      var fade=g.animate([{opacity:1},{opacity:0}],{duration:120,easing:'ease',fill:'forwards'});
+      fade.onfinish=function(){g.remove();isMorphing=false};
+    }
+    anim.onfinish=land;setTimeout(land,660);
+  }
+  function navFrom(btn,next){
+    if(btn.classList.contains('choice')&&!reducedMotion){goMorph(btn,next)}
+    else{go(next,true)}
+  }
+  function go(id,push){
+    var next=document.querySelector('[data-screen="'+id+'"]');if(!next)return;
+    morphOrigin=null;
+    var old=document.querySelector('[data-screen="'+current+'"]');
+    if(push&&current!==id)history.push(current);
+    if(old){old.classList.remove('active');old.setAttribute('aria-hidden','true')}
+    current=id;next.classList.add('active');next.removeAttribute('aria-hidden');splitTitle(next.querySelector('h1,h2'));
+    updateDynamic(id);setProgress();
+    window.setTimeout(function(){var target=next.querySelector('button,input,select,textarea');if(target&&id!=='project')target.focus({preventScroll:true})},440);
+  }
+  function errorFor(screenId,msg){var s=document.querySelector('[data-screen="'+screenId+'"]');var el=s?s.querySelector('.error'):null;if(el)el.textContent=msg||''}
+
+  function isServicePath(){return state.sessionType==='mixing'||state.sessionType==='mastering'||state.sessionType==='mixmaster'}
+  function perSongRate(){return state.sessionType==='mixing'?RATES.mixing:state.sessionType==='mastering'?RATES.mastering:RATES.mixmaster}
+  function computeEstimate(){
+    var lines=[],total=0;
+    if(isServicePath()){
+      var per=perSongRate();
+      var sub=per*state.songs;
+      lines.push({label:state.sessionLabel+' · '+state.songs+(state.songs===1?' song':' songs')+' x '+money(per),amount:sub});
+      total+=sub;
+      if(state.songs>=4){var d1=Math.round(sub*0.10);lines.push({label:'Multi-song discount (10%)',amount:-d1,discount:true});total-=d1}
+    }else{
+      var roomSub=state.roomRate*state.hours;
+      lines.push({label:state.roomName+' · '+state.hours+' hrs x '+money(state.roomRate),amount:roomSub});
+      total+=roomSub;
+      var pct=state.hours>=10?15:state.hours>=8?10:state.hours>=4?5:0;
+      if(pct){var d2=Math.round(roomSub*pct/100);lines.push({label:'Block discount ('+pct+'% off room)',amount:-d2,discount:true});total-=d2}
+      if(state.sessionType==='record-eng'){
+        if(state.room==='B'){var eng=RATES.engineerB*state.hours;lines.push({label:'Engineer · '+state.hours+' hrs x '+money(RATES.engineerB),amount:eng});total+=eng}
+        else{lines.push({label:'Engineer',amount:0,note:'Included'})}
+      }else if(state.sessionType==='podcast'){
+        lines.push({label:'Engineer',amount:0,note:'Included'});
+      }else{
+        lines.push({label:'Engineer',amount:0,note:'Not included'});
+      }
+    }
+    state.addons.forEach(function(a){lines.push({label:a.name,amount:a.price});total+=a.price});
+    return{lines:lines,total:total,deposit:Math.round(total*0.5)};
+  }
+  function sessionSummary(){
+    if(isServicePath())return state.sessionLabel+' · '+state.songs+(state.songs===1?' song':' songs');
+    return state.sessionLabel+' · '+state.roomName+' · '+state.hours+' hrs';
+  }
+
+  function tzParts(d){
+    var p={};
+    new Intl.DateTimeFormat('en-CA',{timeZone:CONFIG.TIMEZONE,year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false,hourCycle:'h23'}).formatToParts(d).forEach(function(x){p[x.type]=x.value});
+    return{y:p.year,m:p.month,d:p.day,dateStr:p.year+'-'+p.month+'-'+p.day,timeStr:p.hour+':'+p.minute};
+  }
+  function tzWeekday(dateStr){
+    return new Intl.DateTimeFormat('en-US',{timeZone:CONFIG.TIMEZONE,weekday:'short'}).format(new Date(dateStr+'T12:00:00'));
+  }
+  function fmtTime(t){
+    var h=+t.slice(0,2),m=t.slice(3);
+    var ap=h>=12?'PM':'AM';var h12=h%12;if(h12===0)h12=12;
+    return h12+':'+m+' '+ap;
+  }
+  function fmtDateLong(dateStr){
+    if(!dateStr)return '—';
+    return new Intl.DateTimeFormat('en-US',{timeZone:CONFIG.TIMEZONE,weekday:'short',month:'short',day:'numeric'}).format(new Date(dateStr+'T12:00:00'));
+  }
+  var SLOT_TIMES=['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];
+  function candidateDates(){
+    var out=[];
+    var now=tzParts(new Date());
+    var base=new Date(Date.UTC(+now.y,+now.m-1,+now.d,12,0,0));
+    for(var i=0;i<14;i++){
+      var dt=new Date(base.getTime()+i*86400000);
+      var ds=tzParts(dt).dateStr;
+      var times=SLOT_TIMES.slice();
+      if(ds===now.dateStr){times=times.filter(function(t){return t>now.timeStr})}
+      if(times.length)out.push({date:ds,times:times});
+    }
+    return out;
+  }
+  function renderSchedule(){
+    var strip=document.getElementById('dateStrip');
+    var host=document.getElementById('timeSlots');
+    var dates=candidateDates();
+    strip.innerHTML='';host.innerHTML='';
+    if(state.date&&!dates.some(function(x){return x.date===state.date})){state.date='';state.time=''}
+    if(!state.date&&dates.length){state.date=dates[0].date}
+    dates.forEach(function(x){
+      var b=document.createElement('button');
+      b.type='button';b.className='datechip'+(x.date===state.date?' selected':'');
+      b.setAttribute('role','option');b.setAttribute('aria-selected',x.date===state.date?'true':'false');
+      b.dataset.date=x.date;
+      var dow=document.createElement('span');dow.className='dow';dow.textContent=tzWeekday(x.date);
+      var md=document.createElement('span');md.className='md';
+      md.textContent=(+x.date.slice(5,7))+'/'+(+x.date.slice(8,10));
+      b.appendChild(dow);b.appendChild(md);
+      b.addEventListener('click',function(){state.date=x.date;state.time='';renderSchedule()});
+      strip.appendChild(b);
+    });
+    var cur=dates.filter(function(x){return x.date===state.date})[0];
+    var times=cur?cur.times:[];
+    if(state.time&&times.indexOf(state.time)===-1)state.time='';
+    times.forEach(function(t){
+      var b=document.createElement('button');
+      b.type='button';b.className='slot'+(t===state.time?' selected':'');
+      b.setAttribute('role','option');b.setAttribute('aria-selected',t===state.time?'true':'false');
+      b.textContent=fmtTime(t);
+      b.addEventListener('click',function(){state.time=t;renderSchedule()});
+      host.appendChild(b);
+    });
+  }
+  function renderEstimate(){
+    var est=computeEstimate();
+    var host=document.getElementById('estLines');
+    host.innerHTML='';
+    est.lines.forEach(function(l){
+      var row=document.createElement('div');row.className='line'+(l.discount?' discount':'');
+      var s=document.createElement('span');s.textContent=l.label;
+      var b=document.createElement('b');b.textContent=l.note?l.note:(l.amount<0?'−'+money(-l.amount):money(l.amount));
+      row.appendChild(s);row.appendChild(b);host.appendChild(row);
+    });
+    text('estDepositLine','Deposit due to lock it in: '+money(est.deposit)+' · Balance '+(money(est.total-est.deposit))+' on the day.');
+    var el=document.getElementById('estTotal');
+    if(reducedMotion){el.textContent=money(est.total);return}
+    var start=null;
+    function tick(ts){
+      if(!start)start=ts;
+      var p=Math.min(1,(ts-start)/750);
+      var eased=1-Math.pow(1-p,3);
+      el.textContent=money(est.total*eased);
+      if(p<1)requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+  function updateSongs(){
+    text('songCount',state.songs);
+    text('songUnit',state.songs===1?'song':'songs');
+    var per=perSongRate();
+    var line=money(per)+' per song · '+money(per*state.songs)+' total';
+    if(state.songs>=4)line+=' · 10% multi-song discount applies at estimate';
+    text('songPriceLine',line);
+  }
+  function confettiBurst(){
+    if(reducedMotion)return;
+    var c=document.getElementById('confetti');
+    c.width=window.innerWidth;c.height=window.innerHeight;
+    var ctx=c.getContext('2d');
+    var colors=['#F15B2A','#1B1712','#E9B44C','#ffffff'];
+    var parts=[];
+    for(var i=0;i<90;i++){parts.push({x:window.innerWidth/2,y:window.innerHeight*0.35,vx:(Math.random()-0.5)*11,vy:-Math.random()*10-3,s:4+Math.random()*6,r:Math.random()*Math.PI,col:colors[i%colors.length],life:1})}
+    var start=null;
+    function frame(ts){
+      if(!start)start=ts;
+      var t=(ts-start)/1000;
+      ctx.clearRect(0,0,c.width,c.height);
+      var alive=false;
+      parts.forEach(function(p){
+        p.vy+=16*0.016;p.x+=p.vx;p.y+=p.vy;p.r+=0.08;p.life=1-t/1.4;
+        if(p.life>0&&p.y<c.height){alive=true;ctx.save();ctx.globalAlpha=Math.max(0,p.life);ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.fillStyle=p.col;ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.62);ctx.restore()}
+      });
+      if(alive&&t<1.6)requestAnimationFrame(frame);else{ctx.clearRect(0,0,c.width,c.height);c.width=0;c.height=0}
+    }
+    requestAnimationFrame(frame);
+  }
+  function postBooking(status){
+    if(!isConfigured(CONFIG.APPS_SCRIPT_URL))return Promise.resolve(false);
+    var est=computeEstimate();
+    var payload={ref:state.bookingRef,status:status,payMethod:state.payMethod,
+      fullName:state.fullName,artistName:state.artistName,email:state.email,phone:state.phone,notes:state.notes,
+      project:state.project,sessionType:state.sessionLabel,room:state.roomName,hours:state.hours,songs:state.songs,
+      addons:state.addons.map(function(a){return a.name}),lines:est.lines,total:est.total,deposit:est.deposit,
+      date:state.date,time:state.time,timezone:CONFIG.TIMEZONE};
+    try{
+      return fetch(CONFIG.APPS_SCRIPT_URL,{method:'POST',mode:'cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify(payload),keepalive:true})
+        .then(function(r){return !!r.ok}).catch(function(){return false});
+    }catch(e){return Promise.resolve(false)}
+  }
+  function saveLead(){
+    if(!state.contactGiven||state.bookingSaved||state.leadSaved)return;
+    state.leadSaved=true;
+    postBooking('lead');
+  }
+  window.addEventListener('pagehide',saveLead);
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')saveLead()});
+
+  function updateDynamic(id){
+    if(id==='room'){
+      text('roomLede',state.sessionType==='record-dry'?'Your engineer runs the session. Our tech sets the room before you arrive.':state.sessionType==='rehearsal'?'Backline included: drums, amps, PA. No engineer on rehearsals.':'Every room is treated, tuned and ready when you walk in.');
+    }
+    if(id==='songs'){updateSongs()}
+    if(id==='schedule'){
+      renderSchedule();
+      if(isServicePath()){text('scheduleTitle','When do we kick off?');text('scheduleLede','Pick a start day and a kickoff call time. Files and stems are due the day before.')}
+      else{text('scheduleTitle','When do you want in?');text('scheduleLede','Open 7 days, 9 AM to 11 PM. Pick a day and a start time.')}
+    }
+    if(id==='estimate'){renderEstimate()}
+    if(id==='payment'){
+      var est=computeEstimate();
+      text('paySession',sessionSummary());
+      text('payDate',fmtDateLong(state.date)+' · '+fmtTime(state.time));
+      text('payDeposit',money(est.deposit)+' of '+money(est.total));
+      var payNow=document.getElementById('payNow');
+      payNow.innerHTML='Pay '+money(est.deposit)+' deposit <span aria-hidden="true">→</span>';
+      document.getElementById('paidDone').style.display='none';
+      errorFor('payment','');
+    }
+    if(id==='confirm'){
+      if(!state.bookingRef)state.bookingRef='ST-'+Math.floor(1000+Math.random()*9000);
+      text('confirmRef',state.bookingRef);
+      text('confirmSession',sessionSummary());
+      text('confirmDate',fmtDateLong(state.date)+' · '+fmtTime(state.time));
+      text('confirmName',state.artistName||state.fullName||'—');
+      text('confirmLede',state.payMethod==='invoice'
+        ?'Invoice sent by email or text. Pay the deposit inside 24 hours to keep your time. The session sheet is below.'
+        :state.paid
+          ?'Deposit received. Your time is locked. The session sheet is below, and a copy is on its way to your email.'
+          :'Details sent to your email. The studio confirms every booking personally.');
+      if(!state.confirmedShown){state.confirmedShown=true;confettiBurst()}
+    }
+  }
+
+  (function(){
+    var tab=document.getElementById('sellTab');
+    if(isConfigured(CONFIG.CHECKOUT_URL)){tab.href=CONFIG.CHECKOUT_URL}
+    else{tab.addEventListener('click',function(e){
+      e.preventDefault();
+      var s=tab.querySelector('span');
+      var orig=s.textContent;
+      s.textContent='Checkout link coming soon';
+      setTimeout(function(){s.textContent=orig},2200);
+    })}
+  })();
+  window.setTimeout(function(){document.getElementById('enterBtn').classList.add('ready')},1200);
+  document.getElementById('enterBtn').addEventListener('click',function(){app.classList.add('in-flow');go('project',true)});
+
+  app.addEventListener('click',function(e){
+    var btn=e.target.closest('button');if(!btn)return;
+    if(btn.id==='backBtn'||btn.id==='restartBtn'||btn.id==='enterBtn')return;
+    if(btn.classList.contains('addon')||btn.classList.contains('datechip')||btn.classList.contains('slot'))return;
+    if(['songsContinue','addonsContinue','scheduleContinue','contactContinue','estContinue','payNow','paidDone','invoiceMe','bookAnother','downloadSheet','songMinus','songPlus'].indexOf(btn.id)!==-1)return;
+    var next=btn.dataset.next;if(!next)return;
+    if(btn.dataset.answer)state[btn.dataset.answer]=btn.dataset.value||btn.textContent.trim();
+    if(btn.dataset.sessiontype){state.sessionType=btn.dataset.sessiontype;state.sessionLabel=btn.dataset.value}
+    if(btn.dataset.room){state.room=btn.dataset.room;state.roomName=btn.dataset.value;state.roomRate=+btn.dataset.rate}
+    if(btn.dataset.hours){state.hours=+btn.dataset.hours}
+    navFrom(btn,next);
+  });
+
+  document.getElementById('songMinus').addEventListener('click',function(){if(state.songs>1)state.songs--;updateSongs()});
+  document.getElementById('songPlus').addEventListener('click',function(){if(state.songs<20)state.songs++;updateSongs()});
+  document.getElementById('songsContinue').addEventListener('click',function(){go('addons',true)});
+
+  document.querySelectorAll('.addon').forEach(function(b){
+    b.addEventListener('click',function(){
+      var on=b.classList.contains('selected');
+      var name=b.dataset.addon,price=+b.dataset.price;
+      if(on){b.classList.remove('selected');b.setAttribute('aria-pressed','false');state.addons=state.addons.filter(function(a){return a.name!==name})}
+      else{b.classList.add('selected');b.setAttribute('aria-pressed','true');state.addons.push({name:name,price:price})}
+    });
+  });
+  document.getElementById('addonsContinue').addEventListener('click',function(){go('schedule',true)});
+  document.getElementById('scheduleContinue').addEventListener('click',function(){
+    if(!state.date||!state.time){errorFor('schedule','Pick a date and a time to continue.');return}
+    errorFor('schedule','');
+    go('contact',true);
+  });
+  document.getElementById('contactContinue').addEventListener('click',function(){
+    var ids=['fullName','email','phone'];
+    var missing=false;
+    ids.forEach(function(id){
+      var el=document.getElementById(id);var v=(el.value||'').trim();
+      var ok=!!v;
+      if(ok&&id==='email')ok=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+      if(!ok){missing=true;el.setAttribute('aria-invalid','true')}else el.removeAttribute('aria-invalid');
+    });
+    if(missing){errorFor('contact','Please check the highlighted fields.');return}
+    errorFor('contact','');
+    state.fullName=document.getElementById('fullName').value.trim();
+    state.artistName=document.getElementById('artistName').value.trim();
+    state.email=document.getElementById('email').value.trim();
+    state.phone=document.getElementById('phone').value.trim();
+    state.notes=document.getElementById('notes').value.trim();
+    state.contactGiven=true;
+    go('estimate',true);
+  });
+  document.getElementById('estContinue').addEventListener('click',function(){
+    if(!state.bookingRef)state.bookingRef='ST-'+Math.floor(1000+Math.random()*9000);
+    postBooking('estimate-locked');
+    goMorph(this,'payment');
+  });
+  document.getElementById('payNow').addEventListener('click',function(){
+    if(!state.bookingRef)state.bookingRef='ST-'+Math.floor(1000+Math.random()*9000);
+    state.payMethod='card';
+    postBooking('pending-payment');
+    if(isConfigured(CONFIG.JIM_DEPOSIT)){
+      var w=520,h=800;
+      var left=Math.max(0,Math.round((window.screen.width-w)/2));
+      var topPos=Math.max(0,Math.round((window.screen.height-h)/2));
+      var pop=window.open(CONFIG.JIM_DEPOSIT,'jimCheckout','popup=yes,width='+w+',height='+h+',left='+left+',top='+topPos);
+      if(!pop||typeof pop.closed==='undefined'||pop.closed){window.open(CONFIG.JIM_DEPOSIT,'_blank')}
+      state.payOpened=true;
+      document.getElementById('paidDone').style.display='';
+      errorFor('payment','');
+    }else{
+      document.getElementById('paidDone').style.display='';
+      errorFor('payment','Demo mode: no live payment link yet. Tap the completed button to finish the demo, or choose invoice.');
+    }
+  });
+  document.getElementById('paidDone').addEventListener('click',function(){
+    state.paid=true;
+    postBooking('paid-marked');
+    state.bookingSaved=true;
+    goMorph(this,'confirm');
+  });
+  document.getElementById('invoiceMe').addEventListener('click',function(){
+    state.paid=false;state.payMethod='invoice';
+    if(!state.bookingRef)state.bookingRef='ST-'+Math.floor(1000+Math.random()*9000);
+    postBooking('invoice-requested');
+    state.bookingSaved=true;
+    goMorph(this,'confirm');
+  });
+  window.addEventListener('focus',function(){
+    if(!state.payOpened)return;
+    var b=document.getElementById('paidDone');
+    if(b&&b.style.display!=='none'){b.classList.remove('pulse');void b.offsetWidth;b.classList.add('pulse')}
+  });
+
+  document.getElementById('downloadSheet').addEventListener('click',function(){
+    var est=computeEstimate();
+    var c=document.createElement('canvas');c.width=1200;c.height=1560;
+    var x=c.getContext('2d');
+    x.fillStyle='#ffffff';x.fillRect(0,0,1200,1560);
+    x.fillStyle='#1B1712';x.fillRect(0,0,1200,200);
+    x.fillStyle='#F15B2A';x.fillRect(0,200,1200,14);
+    x.fillStyle='#ffffff';x.font='800 62px Manrope, Arial, sans-serif';x.fillText('AMPLITUDE STUDIOS',70,105);
+    x.font='600 26px "IBM Plex Mono", monospace';x.fillText('SESSION SHEET · '+(state.bookingRef||''),70,160);
+    x.fillStyle='#1B1712';
+    var y=310;
+    function row(label,value){
+      x.font='600 24px "IBM Plex Mono", monospace';x.fillStyle='#6B665E';x.fillText(label.toUpperCase(),70,y);
+      x.font='700 34px Manrope, Arial, sans-serif';x.fillStyle='#1B1712';x.fillText(value,70,y+42);
+      y+=104;
+    }
+    row('Artist / project',state.artistName||state.fullName||'—');
+    row('Booked by',(state.fullName||'—')+' · '+(state.phone||''));
+    row('Project',state.project||'—');
+    row('Session',sessionSummary());
+    row('When',fmtDateLong(state.date)+' · '+fmtTime(state.time));
+    y+=6;x.fillStyle='#DDD8CF';x.fillRect(70,y,1060,2);y+=58;
+    est.lines.forEach(function(l){
+      x.font='500 28px Manrope, Arial, sans-serif';x.fillStyle='#1B1712';
+      x.fillText(l.label,70,y);
+      var amt=l.note?l.note:(l.amount<0?'−'+money(-l.amount):money(l.amount));
+      x.textAlign='right';x.fillText(amt,1130,y);x.textAlign='left';
+      y+=48;
+    });
+    y+=22;
+    x.font='800 44px Manrope, Arial, sans-serif';x.fillText('Total',70,y);
+    x.textAlign='right';x.fillText(money(est.total),1130,y);x.textAlign='left';y+=54;
+    x.font='700 32px Manrope, Arial, sans-serif';x.fillStyle='#F15B2A';
+    x.fillText(state.payMethod==='invoice'?'Deposit invoiced: '+money(est.deposit):state.paid?'Deposit paid: '+money(est.deposit):'Deposit due: '+money(est.deposit),70,y);
+    y+=90;
+    x.font='500 24px Manrope, Arial, sans-serif';x.fillStyle='#6B665E';
+    x.fillText('Balance is due on the day of the session.',70,y);y+=36;
+    x.fillText('Questions? Reply to your confirmation email.',70,y);
+    c.toBlob(function(blob){
+      if(!blob)return;
+      var a=document.createElement('a');
+      a.href=URL.createObjectURL(blob);
+      a.download='session-sheet-'+(state.bookingRef||'booking')+'.png';
+      document.body.appendChild(a);a.click();a.remove();
+      setTimeout(function(){URL.revokeObjectURL(a.href)},4000);
+    },'image/png');
+  });
+  document.getElementById('bookAnother').addEventListener('click',function(){window.location.reload()});
+  document.getElementById('backBtn').addEventListener('click',function(){
+    if(isMorphing||!history.length)return;
+    var prev=history.pop();
+    if(!reducedMotion&&morphOrigin&&morphOrigin.to===current&&morphOrigin.from===prev){var c=morphOrigin.card;morphOrigin=null;goMorphBack(c,prev)}
+    else{morphOrigin=null;go(prev,false)}
+  });
+  document.getElementById('restartBtn').addEventListener('click',function(){window.location.reload()});
+
+  if(window.matchMedia('(pointer:fine)').matches&&!reducedMotion){
+    [].slice.call(document.querySelectorAll('.choice')).forEach(function(card){card.addEventListener('pointermove',function(e){var r=card.getBoundingClientRect(),px=(e.clientX-r.left)/r.width-.5,py=(e.clientY-r.top)/r.height-.5;card.style.transform='perspective(700px) rotateX('+(-py*4)+'deg) rotateY('+(px*5)+'deg) translate(-2px,-2px)'});card.addEventListener('pointerleave',function(){card.style.transform=''})});
+  }
+  splitTitle(document.querySelector('[data-screen="loader"] h1'));
+})();
+</script>
+</body>
+</html>

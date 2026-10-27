@@ -1,0 +1,14 @@
+# Prospect data stays local — never commit the tracker or prospect lists
+*TRACKER*.csv
+*TRACKER*.md
+recording-studios-nationwide.*
+*prospect-list*
+*prospect_list*
+
+# Secrets — never commit
+.env
+*.env
+*.pem
+*.key
+*PAT*
+*token*
